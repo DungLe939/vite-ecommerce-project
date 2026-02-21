@@ -90,6 +90,10 @@
   flex-shrink: 0;
 }
 
+.header .orders-link.active {
+  text-decoration: underline;
+}
+
 .header .search-icon {
   height: 20px;
   margin-left: 0px;
