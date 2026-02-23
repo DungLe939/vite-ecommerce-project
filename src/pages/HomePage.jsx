@@ -3,6 +3,15 @@ import './HomePage.css'
 import { products } from '../data/products';
 
 function HomePage() {
+
+    fetch("http://localhost:8080/api/products")
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+        })
+
     return (
         <div>
             <title>Ecommerce Project</title>
@@ -13,7 +22,7 @@ function HomePage() {
                 <div className="products-grid">
 
                     {products.map((product) => {
-                        const { id, image, name, rating, priceCents, keywords} = product;
+                        const { id, image, name, rating, priceCents } = product;
                         return (
                             <div key={id} className="product-container">
                                 <div className="product-image-container">
@@ -63,7 +72,7 @@ function HomePage() {
                             </div>
                         );
                     })}
-                    
+
                 </div>
             </div>
         </div>
