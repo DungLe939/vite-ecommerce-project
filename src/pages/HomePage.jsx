@@ -3,12 +3,13 @@ import './HomePage.css'
 import axios from 'axios'
 import { useEffect, useState } from 'react';
 
-function HomePage() {
+function HomePage({cart}) {
 
     const [products, setProducts] = useState([]);
 
+
     useEffect(() => {
-        axios.get("http://localhost:8080/api/products")
+        axios.get("/api/products")
             .then((response) => {
                 setProducts(response.data);
             })
@@ -18,7 +19,7 @@ function HomePage() {
         <div>
             <title>Ecommerce Project</title>
             <link rel="icon" type="image/svg+xml" href="home-favicon.png" />
-            <Header />
+            <Header cart={cart} />
 
             <div className="home-page">
                 <div className="products-grid">
