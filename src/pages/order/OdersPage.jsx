@@ -1,5 +1,5 @@
 import './orders.css'
-import '.././index.css'
+import '../.././index.css'
 import Header from '../../components/Header';
 import { useState, useEffect, Fragment } from 'react';
 import axios from 'axios'
@@ -64,7 +64,7 @@ function OrdersPages({ cart }) {
                                                         Arriving on: {formatDay(orderProduct.product.estimatedDeliveryTimeMs)}
                                                     </div>
                                                     <div className="product-quantity">
-                                                        Quantity: {orderProduct.product.quantity}
+                                                        Quantity: {orderProduct.quantity}
                                                     </div>
                                                     <button className="buy-again-button button-primary">
                                                         <img className="buy-again-icon" src="images/icons/buy-again.png" />
