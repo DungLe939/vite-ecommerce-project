@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import '.././index.css'
+import '../.././index.css'
 import './checkout.css'
-import CheckoutHeader from './checkout/CheckoutHeader';
+import CheckoutHeader from './CheckoutHeader';
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { formatMoney } from '../utils/money';
+import { formatMoney } from '../../utils/money';
 
 function CheckoutPage({ cart }) {
 
@@ -15,10 +15,17 @@ function CheckoutPage({ cart }) {
     })
 
     const [deliveryOptions, setDeliveryOptions] = useState([]);
+    const [paymentSummary, setPaymentSummary] = useState(null);
+
     useEffect(() => {
         axios.get("/api/delivery-options?expand=estimatedDeliveryTimeMs")
             .then((response) => {
                 setDeliveryOptions(response.data);
+            })
+
+        axios.get("/api/payment-summary")
+            .then((response) => {
+                setPaymentSummary(response.data);
             })
     }, []);
 
@@ -29,7 +36,6 @@ function CheckoutPage({ cart }) {
             <CheckoutHeader countItems={countItems} />
             <div className="checkout-page">
                 <div className="page-title">Review your order</div>
-
                 <div className="checkout-grid">
                     <div className="order-summary">
 
@@ -99,40 +105,41 @@ function CheckoutPage({ cart }) {
                         })}
                     </div>
 
-                    <div className="payment-summary">
-                        <div className="payment-summary-title">
-                            Payment Summary
-                        </div>
+                    {paymentSummary &&
+                        <div className="payment-summary">
+                            <div className="payment-summary-title">
+                                Payment Summary
+                            </div>
+                            <div className="payment-summary-row">
+                                <div>Items ({paymentSummary.totalItems}):</div>
+                                <div className="payment-summary-money">${formatMoney(paymentSummary.productCostCents)}</div>
+                            </div>
 
-                        <div className="payment-summary-row">
-                            <div>Items ({countItems}):</div>
-                            <div className="payment-summary-money">$42.75</div>
-                        </div>
+                            <div className="payment-summary-row">
+                                <div>Shipping &amp; handling:</div>
+                                <div className="payment-summary-money">${formatMoney(paymentSummary.shippingCostCents)}</div>
+                            </div>
 
-                        <div className="payment-summary-row">
-                            <div>Shipping &amp; handling:</div>
-                            <div className="payment-summary-money">$4.99</div>
-                        </div>
+                            <div className="payment-summary-row subtotal-row">
+                                <div>Total before tax:</div>
+                                <div className="payment-summary-money">${formatMoney(paymentSummary.totalCostBeforeTaxCents)}</div>
+                            </div>
 
-                        <div className="payment-summary-row subtotal-row">
-                            <div>Total before tax:</div>
-                            <div className="payment-summary-money">$47.74</div>
-                        </div>
+                            <div className="payment-summary-row">
+                                <div>Estimated tax (10%):</div>
+                                <div className="payment-summary-money">${formatMoney(paymentSummary.taxCents)}</div>
+                            </div>
 
-                        <div className="payment-summary-row">
-                            <div>Estimated tax (10%):</div>
-                            <div className="payment-summary-money">$4.77</div>
-                        </div>
+                            <div className="payment-summary-row total-row">
+                                <div>Order total:</div>
+                                <div className="payment-summary-money">${formatMoney(paymentSummary.totalCostCents)}</div>
+                            </div>
 
-                        <div className="payment-summary-row total-row">
-                            <div>Order total:</div>
-                            <div className="payment-summary-money">$52.51</div>
+                            <button className="place-order-button button-primary">
+                                Place your order
+                            </button>
                         </div>
-
-                        <button className="place-order-button button-primary">
-                            Place your order
-                        </button>
-                    </div>
+                    }
                 </div>
             </div>
         </>
