@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { DeliveryOptions } from "./DeliveryOptions";
 import { CartItemDetail } from "./CartItemDetail";
 
-export function OrderSummary({ deliveryOptions, cart }) {
+export function OrderSummary({ deliveryOptions, cart, loadCart }) {
     return (
         <div className="order-summary">
 
@@ -24,6 +24,8 @@ export function OrderSummary({ deliveryOptions, cart }) {
                                 deliveryOptions={deliveryOptions}
                                 deliveryOptionId={deliveryOptionId}
                                 productId={productId}
+                                quantity={quantity}
+                                loadCart={loadCart}
                             />
                         </div>
                     </div>
