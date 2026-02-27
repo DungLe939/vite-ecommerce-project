@@ -1,0 +1,46 @@
+.reset-floating-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+
+    background-color: #4caf7a;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+
+    box-shadow: 0 4px 12px rgba(76, 175, 122, 0.4);
+    transition: all 0.25s ease;
+}
+
+.reset-floating-button:hover {
+    background-color: #43a06e;
+    box-shadow: 0 6px 18px rgba(76, 175, 122, 0.55);
+    transform: translateY(-2px);
+}
+
+.reset-floating-button:active {
+    transform: translateY(0);
+}
+
+.reset-floating-button .reset-icon {
+    font-size: 18px;
+}
+
+.reset-floating-button .reset-text {
+    font-family: inherit;
+}
+
+.reset-floating-button.resetting {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

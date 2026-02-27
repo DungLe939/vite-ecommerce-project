@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../api";
 import { useState } from "react";
 
 
@@ -6,6 +6,7 @@ export function ProductCard({ product, loadCart }) {
 
     const [quantity, setQuantity] = useState(1);
     const { id, image, name, rating, priceCents } = product;
+    const [isTick, setIsTick] = useState(false);
 
     // Can no need key here
     return (
@@ -46,7 +47,7 @@ export function ProductCard({ product, loadCart }) {
 
             <div className="product-spacer"></div>
 
-            <div className="added-to-cart">
+            <div className="added-to-cart" style={{ opacity: isTick ? 1 : 0 }}>
                 <img src="images/icons/checkmark.png" />
                 Added
             </div>
@@ -54,12 +55,16 @@ export function ProductCard({ product, loadCart }) {
             <button
                 className="add-to-cart-button button-primary"
                 onClick={async () => {
-                    await axios.post('/api/cart-item', {
+                    await api.post('/api/cart-item', {
                         productId: id,
                         quantity: quantity,
                         deliveryOptionId: 1
                     });
-                    loadCart();
+                    await loadCart();
+                    setIsTick(true);
+                    setTimeout(() => {
+                        setIsTick(false);
+                    }, 2000);
                 }}
             >
                 Add to Cart

@@ -3,7 +3,7 @@ import '../.././index.css'
 import Header from '../../components/Header';
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import dayjs from 'dayjs';
 
 function TrackingPage({ cart }) {
@@ -15,7 +15,7 @@ function TrackingPage({ cart }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.get(`/api/orders/${orderId}?expand=products`);
+            const response = await api.get(`/api/orders/${orderId}?expand=products`);
             setTrackingOrder(response.data);
         }
         fetchData();
@@ -82,7 +82,7 @@ function TrackingPage({ cart }) {
                     <div className="progress-bar-container">
                         <div
                             className="progress-bar"
-                            style={{width: `${deliveryPercent}%`}}
+                            style={{ width: `${deliveryPercent}%` }}
                         ></div>
                     </div>
                 </div>

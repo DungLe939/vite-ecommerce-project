@@ -1,8 +1,19 @@
+import api from '../../api';
 import { formatDay } from '../../utils/formatDay';
 import { formatMoney } from '../../utils/money';
 import { Fragment } from 'react';
 
-export function OrdersGrid({ orders }) {
+export function OrdersGrid({ orders, loadCart }) {
+
+    const addToCart = async (productId) => {
+        await api.post('/api/cart-item', {
+            productId: productId,
+            quantity: 1,
+            deliveryOptionId: "1"
+        })
+        await loadCart();
+    }
+
     return (
         <div className="orders-grid">
             {orders && orders.map((order) => {
@@ -45,7 +56,10 @@ export function OrdersGrid({ orders }) {
                                             <div className="product-quantity">
                                                 Quantity: {orderProduct.quantity}
                                             </div>
-                                            <button className="buy-again-button button-primary">
+                                            <button
+                                                className="buy-again-button button-primary"
+                                                onClick={() => { addToCart(orderProduct.product.id) }}
+                                            >
                                                 <img className="buy-again-icon" src="images/icons/buy-again.png" />
                                                 <span className="buy-again-message">Add to Cart</span>
                                             </button>

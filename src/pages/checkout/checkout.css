@@ -118,6 +118,24 @@
   margin-left: 3px;
 }
 
+.checkout-page .quantity-input {
+  width: 50px;
+  padding: 4px 8px;
+  margin-left: 4px;
+  margin-right: 4px;
+  border: 1px solid rgb(200, 200, 200);
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.checkout-page .quantity-input:focus {
+  border-color: rgb(25, 135, 84);
+  box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.15);
+}
+
 @media (max-width: 1000px) {
   .checkout-page .delivery-options {
     /* grid-column: 1 means this element will be placed

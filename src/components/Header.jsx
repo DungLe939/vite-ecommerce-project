@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import './Header.css'
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate, useSearchParams } from 'react-router';
 
 function Header({ cart }) {
     let totalQuantity = 0;
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     cart.forEach((element) => {
         totalQuantity += element.quantity;
     });
 
+    const handleOnClick = () => {
+        console.log(text)
+        setText("");
+        navigate(`/?search=${text}`);
+    }
+
+    const [text, setText] = useState(searchParams.get('search') || "");
     return (
         <>
             <div className="header">
@@ -19,9 +29,26 @@ function Header({ cart }) {
                 </div>
 
                 <div className="middle-section">
-                    <input className="search-bar" type="text" placeholder="Search" />
+                    <input
+                        className="search-bar"
+                        type="text"
+                        placeholder="Search"
+                        value={text}
+                        onChange={(e) => {
+                            setText(e.target.value);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter')
+                                handleOnClick();
+                        }}
+                    />
 
-                    <button className="search-button">
+                    <button
+                        className="search-button"
+                        onClick={() => {
+                            handleOnClick();
+                        }}
+                    >
                         <img className="search-icon" src="images/icons/search-icon.png" />
                     </button>
                 </div>
@@ -33,7 +60,7 @@ function Header({ cart }) {
 
                     <NavLink className="cart-link header-link" to="/checkout">
                         <img className="cart-icon" src="images/icons/cart-icon.png" />
-                        <div className="cart-quantity">{ totalQuantity }</div>
+                        <div className="cart-quantity">{totalQuantity}</div>
                         <div className="cart-text">Cart</div>
                     </NavLink>
                 </div>

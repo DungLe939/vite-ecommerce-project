@@ -1,6 +1,34 @@
+import api from "../../api";
 import { formatMoney } from "../../utils/money";
+import { useNavigate } from "react-router";
 
-export function PaymentSummary({ paymentSummary }) {
+export function PaymentSummary({ paymentSummary, loadCart, cart, deliveryOptions }) {
+
+    const navigate = useNavigate();
+
+    const createOrder = async () => {
+        const product = cart.map((item) => {
+            const deliveryOption = deliveryOptions.find(
+                (option) => option.id === item.deliveryOptionId
+            );
+            return {
+                productId: item.productId,
+                quantity: item.quantity,
+                estimatedDeliveryTimeMs: deliveryOption
+                    ? deliveryOption.estimatedDeliveryTimeMs
+                    : null,
+            };
+        });
+
+        await api.post('/api/orders', {
+            orderTimeMs: Date.now(),
+            totalCostCents: paymentSummary.totalCostCents,
+            product,
+        });
+        await loadCart();
+        navigate('/orders');
+    }
+
     return (
         <div className="payment-summary">
             <div className="payment-summary-title">
@@ -31,7 +59,10 @@ export function PaymentSummary({ paymentSummary }) {
                 <div className="payment-summary-money">${formatMoney(paymentSummary.totalCostCents)}</div>
             </div>
 
-            <button className="place-order-button button-primary">
+            <button
+                className="place-order-button button-primary"
+                onClick={createOrder}
+            >
                 Place your order
             </button>
         </div>

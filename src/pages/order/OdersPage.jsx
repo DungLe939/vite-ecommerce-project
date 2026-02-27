@@ -2,16 +2,16 @@ import './orders.css'
 import '../.././index.css'
 import Header from '../../components/Header';
 import { useState, useEffect } from 'react';
-import axios from 'axios'
+import api from '../../api'
 import { OrdersGrid } from './OrdersGrid';
 
-function OrdersPages({ cart }) {
+function OrdersPages({ cart, loadCart }) {
 
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.get("/api/orders?expand=products");
+            const response = await api.get("/api/orders?expand=products");
             setOrders(response.data);
         }
         fetchData();
@@ -24,7 +24,7 @@ function OrdersPages({ cart }) {
             <Header cart={cart} />
             <div className="orders-page">
                 <div className="page-title">Your Orders</div>
-                <OrdersGrid orders={orders} />
+                <OrdersGrid orders={orders} loadCart={loadCart} />
             </div>
         </>
     );
