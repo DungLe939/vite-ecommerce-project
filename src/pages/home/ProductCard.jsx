@@ -1,18 +1,17 @@
 import api from "../../api";
 import { useState } from "react";
 
-
-export function ProductCard({ product, loadCart }) {
+export function ProductCard({ product, loadCart, addToast }) {
 
     const [quantity, setQuantity] = useState(1);
     const { id, image, name, rating, priceCents } = product;
-    const [isTick, setIsTick] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
 
-    // Can no need key here
     return (
         <div className="product-container">
             <div className="product-image-container">
-                <img className="product-image" src={image} />
+                {/* [web-design-guidelines: images need alt] */}
+                <img className="product-image" src={image} alt={name} loading="lazy" />
             </div>
 
             <div className="product-name limit-text-to-2-lines">
@@ -20,7 +19,11 @@ export function ProductCard({ product, loadCart }) {
             </div>
 
             <div className="product-rating-container">
-                <img className="product-rating-stars" src={`images/ratings/rating-${rating.stars * 10}.png`} />
+                <img
+                    className="product-rating-stars"
+                    src={`images/ratings/rating-${rating.stars * 10}.png`}
+                    alt={`${rating.stars} stars`}
+                />
                 <div className="product-rating-count link-primary">
                     {rating.count}
                 </div>
@@ -31,7 +34,13 @@ export function ProductCard({ product, loadCart }) {
             </div>
 
             <div className="product-quantity-container">
-                <select value={quantity} onChange={(e) => { setQuantity(Number(e.target.value)) }}>
+                {/* [web-design-guidelines: label for form controls] */}
+                <label htmlFor={`qty-${id}`} className="sr-only">Quantity</label>
+                <select
+                    id={`qty-${id}`}
+                    value={quantity}
+                    onChange={(e) => { setQuantity(Number(e.target.value)) }}
+                >
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -47,24 +56,25 @@ export function ProductCard({ product, loadCart }) {
 
             <div className="product-spacer"></div>
 
-            <div className="added-to-cart" style={{ opacity: isTick ? 1 : 0 }}>
-                <img src="images/icons/checkmark.png" />
+            <div className="added-to-cart" style={{ opacity: isAdding ? 1 : 0 }}>
+                <img src="images/icons/checkmark.png" alt="" aria-hidden="true" />
                 Added
             </div>
 
             <button
                 className="add-to-cart-button button-primary"
-                onClick={async () => {
-                    await api.post('/api/cart-item', {
+                disabled={isAdding}
+                onClick={() => {
+                    setIsAdding(true);
+                    if (addToast) addToast(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart`);
+                    setTimeout(() => {
+                        setIsAdding(false);
+                    }, 2000);
+                    api.post('/api/cart-item', {
                         productId: id,
                         quantity: quantity,
                         deliveryOptionId: 1
-                    });
-                    await loadCart();
-                    setIsTick(true);
-                    setTimeout(() => {
-                        setIsTick(false);
-                    }, 2000);
+                    }).then(() => loadCart());
                 }}
             >
                 Add to Cart

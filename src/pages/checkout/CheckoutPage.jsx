@@ -5,33 +5,66 @@ import CheckoutHeader from './CheckoutHeader';
 import api from '../../api'
 import { OrderSummary } from './OrderSummary';
 import { PaymentSummary } from './PaymentSummary';
+import { CartItemSkeleton } from '../../components/LoadingSkeleton';
+import { EmptyState } from '../../components/EmptyState';
+import { useNavigate } from 'react-router';
 
-function CheckoutPage({ cart, loadCart }) {
+function CheckoutPage({ cart, loadCart, addToast }) {
 
+    const navigate = useNavigate();
+
+    // [rerender-derived-state-no-effect] derive countItems during render
     let countItems = 0;
-
-    cart.forEach((item) => {
+    for (const item of cart) {
         countItems += item.quantity;
-    })
+    }
 
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [paymentSummary, setPaymentSummary] = useState(null);
+    const [isLoadingDelivery, setIsLoadingDelivery] = useState(true);
 
+    // [async-parallel] Fetch delivery options and payment summary in parallel
     useEffect(() => {
         const fetchCheckoutData = async () => {
-            const resDelivery = await api.get("/api/delivery-options?expand=estimatedDeliveryTimeMs");
+            setIsLoadingDelivery(true);
+            const [resDelivery, resPayment] = await Promise.all([
+                api.get("/api/delivery-options?expand=estimatedDeliveryTimeMs"),
+                api.get("/api/payment-summary"),
+            ]);
             setDeliveryOptions(resDelivery.data);
+            setPaymentSummary(resPayment.data);
+            setIsLoadingDelivery(false);
         }
         fetchCheckoutData();
     }, []);
 
+    // Re-fetch payment summary when cart changes
     useEffect(() => {
-        const fetchCheckoutData = async () => {
-            const paymentDelivery = await api.get("/api/payment-summary");
-            setPaymentSummary(paymentDelivery.data);
+        if (!isLoadingDelivery) {
+            api.get("/api/payment-summary")
+                .then(res => setPaymentSummary(res.data));
         }
-        fetchCheckoutData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cart]);
+
+    // [web-design-guidelines: empty states — don't render broken UI]
+    if (!isLoadingDelivery && cart.length === 0) {
+        return (
+            <>
+                <title>Checkout</title>
+                <CheckoutHeader countItems={0} />
+                <div className="checkout-page">
+                    <EmptyState
+                        icon="🛒"
+                        title="Your cart is empty"
+                        message="Looks like you haven't added anything yet. Browse our products and find something you love!"
+                        actionText="Continue Shopping"
+                        onAction={() => navigate('/')}
+                    />
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -41,10 +74,18 @@ function CheckoutPage({ cart, loadCart }) {
             <div className="checkout-page">
                 <div className="page-title">Review your order</div>
                 <div className="checkout-grid">
-                    <OrderSummary deliveryOptions={deliveryOptions} cart={cart} loadCart={loadCart} />
-                    {paymentSummary &&
-                        <PaymentSummary paymentSummary={paymentSummary} loadCart={loadCart} cart={cart} deliveryOptions={deliveryOptions} />
-                    }
+                    {isLoadingDelivery ? (
+                        <div className="order-summary">
+                            {Array.from({ length: Math.max(cart.length, 2) }).map((_, i) => (
+                                <CartItemSkeleton key={i} />
+                            ))}
+                        </div>
+                    ) : (
+                        <OrderSummary deliveryOptions={deliveryOptions} cart={cart} loadCart={loadCart} addToast={addToast} />
+                    )}
+                    {paymentSummary != null ? (
+                        <PaymentSummary paymentSummary={paymentSummary} loadCart={loadCart} cart={cart} deliveryOptions={deliveryOptions} addToast={addToast} />
+                    ) : null}
                 </div>
             </div>
         </>

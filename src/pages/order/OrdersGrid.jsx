@@ -1,17 +1,26 @@
 import api from '../../api';
 import { formatDay } from '../../utils/formatDay';
 import { formatMoney } from '../../utils/money';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 
-export function OrdersGrid({ orders, loadCart }) {
+export function OrdersGrid({ orders, loadCart, addToast }) {
+
+    const [addingProductId, setAddingProductId] = useState(null);
 
     const addToCart = async (productId) => {
-        await api.post('/api/cart-item', {
-            productId: productId,
-            quantity: 1,
-            deliveryOptionId: "1"
-        })
-        await loadCart();
+        setAddingProductId(productId);
+        try {
+            await api.post('/api/cart-item', {
+                productId: productId,
+                quantity: 1,
+                deliveryOptionId: "1"
+            });
+            await loadCart();
+            if (addToast) addToast('Added to cart');
+        } catch {
+            if (addToast) addToast('Failed to add to cart', 'error');
+        }
+        setAddingProductId(null);
     }
 
     return (
@@ -40,10 +49,12 @@ export function OrdersGrid({ orders, loadCart }) {
 
                         <div className="order-details-grid">
                             {order.products && order.products.map((orderProduct) => {
+                                const isAdding = addingProductId === orderProduct.product.id;
                                 return (
                                     <Fragment key={orderProduct.product.id}>
                                         <div className="product-image-container">
-                                            <img src={orderProduct.product.image} />
+                                            {/* [web-design-guidelines: images need alt] */}
+                                            <img src={orderProduct.product.image} alt={orderProduct.product.name} />
                                         </div>
 
                                         <div className="product-details">
@@ -59,13 +70,20 @@ export function OrdersGrid({ orders, loadCart }) {
                                             <button
                                                 className="buy-again-button button-primary"
                                                 onClick={() => { addToCart(orderProduct.product.id) }}
+                                                disabled={isAdding}
+                                                style={isAdding ? { opacity: 0.7, cursor: 'wait' } : {}}
+                                                aria-label={`Add ${orderProduct.product.name} to cart`}
                                             >
-                                                <img className="buy-again-icon" src="images/icons/buy-again.png" />
-                                                <span className="buy-again-message">Add to Cart</span>
+                                                {/* [web-design-guidelines: images need alt, decorative icons aria-hidden] */}
+                                                <img className="buy-again-icon" src="images/icons/buy-again.png" alt="" aria-hidden="true" />
+                                                <span className="buy-again-message">
+                                                    {isAdding ? "Adding…" : "Add to Cart"}
+                                                </span>
                                             </button>
                                         </div>
 
                                         <div className="product-actions">
+                                            {/* [web-design-guidelines: use <a> for navigation] */}
                                             <a href={`/tracking/${order.id}/${orderProduct.product.id}`}>
                                                 <button className="track-package-button button-secondary">
                                                     Track package

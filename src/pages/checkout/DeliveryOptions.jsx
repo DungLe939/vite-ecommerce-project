@@ -4,12 +4,12 @@ import api from "../../api";
 
 export function DeliveryOptions({ deliveryOptions, deliveryOptionId, productId, quantity, loadCart }) {
 
-    const updateDeliveryOption = async (newDeliveryOptionId) => {
-        await api.put(`/api/cart-items/${productId}`, {
+    const updateDeliveryOption = (newDeliveryOptionId) => {
+        // Fire and forget — API runs in background
+        api.put(`/api/cart-items/${productId}`, {
             quantity: quantity,
             deliveryOptionId: newDeliveryOptionId
-        });
-        await loadCart();
+        }).then(() => loadCart());
     };
 
     return (

@@ -4,31 +4,15 @@
 
 .home-page .products-grid {
   display: grid;
-
-  /* - In CSS Grid, 1fr means a column will take up the
-       remaining space in the grid.
-     - If we write 1fr 1fr ... 1fr; 8 times, this will
-       divide the grid into 8 columns, each taking up an
-       equal amount of the space.
-     - repeat(8, 1fr); is a shortcut for repeating "1fr"
-       8 times (instead of typing out "1fr" 8 times).
-       repeat(...) is a special property that works with
-       display: grid; */
   grid-template-columns: repeat(8, 1fr);
 }
 
-/* @media is used to create responsive design (making the
-   website look good on any screen size). This @media
-   means when the screen width is 2000px or less, we
-   will divide the grid into 7 columns instead of 8. */
 @media (max-width: 2000px) {
   .home-page .products-grid {
     grid-template-columns: repeat(7, 1fr);
   }
 }
 
-/* This @media means when the screen width is 1600px or
-   less, we will divide the grid into 6 columns. */
 @media (max-width: 1600px) {
   .home-page .products-grid {
     grid-template-columns: repeat(6, 1fr);
@@ -65,34 +49,45 @@
   }
 }
 
+/* Product Card — hover lift + shadow */
 .home-page .product-container {
   padding-top: 40px;
   padding-bottom: 25px;
   padding-left: 25px;
   padding-right: 25px;
-
   border-right: 1px solid rgb(240, 240, 240);
   border-bottom: 1px solid rgb(240, 240, 240);
-
   display: flex;
   flex-direction: column;
+  /* [web-design-guidelines: animate transform/opacity only] */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-page .product-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  z-index: 1;
 }
 
 .home-page .product-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-
   height: 180px;
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
+/* Product image hover zoom */
 .home-page .product-image {
-  /* Images overflow the container by default. To prevent this, set
-     max-width and max-height to 100% to stay inside container. */
   max-width: 100%;
   max-height: 100%;
   border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.home-page .product-container:hover .product-image {
+  transform: scale(1.08);
 }
 
 .home-page .product-name {
@@ -130,18 +125,21 @@
   flex: 1;
 }
 
+/* Added to cart — slide up + fade animation */
 .home-page .added-to-cart {
   color: rgb(25, 135, 84);
   font-size: 16px;
-
   display: flex;
   align-items: center;
   margin-bottom: 8px;
-
-  /* At first, the "Added to cart" message will
-     be invisible. Use JavaScript to change the
-     opacity and make it visible. */
   opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(5px);
+}
+
+/* When opacity is set to 1 via style prop, also slide up */
+.home-page .added-to-cart[style*="opacity: 1"] {
+  transform: translateY(0);
 }
 
 .home-page .added-to-cart img {
@@ -154,4 +152,19 @@
   padding: 8px;
   height: 34px;
   margin-top: 1px;
+}
+
+/* [web-design-guidelines: honor prefers-reduced-motion] */
+@media (prefers-reduced-motion: reduce) {
+  .home-page .product-container,
+  .home-page .product-image,
+  .home-page .added-to-cart {
+    transition: none;
+  }
+  .home-page .product-container:hover {
+    transform: none;
+  }
+  .home-page .product-container:hover .product-image {
+    transform: none;
+  }
 }
