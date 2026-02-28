@@ -3,9 +3,27 @@ import { formatDay } from '../../utils/formatDay';
 import { formatMoney } from '../../utils/money';
 import { Fragment, useState } from 'react';
 
-export function OrdersGrid({ orders, loadCart, addToast }) {
+export function OrdersGrid({ orders, loadCart, addToast, setOrders }) {
 
     const [addingProductId, setAddingProductId] = useState(null);
+    const [deletingOrderId, setDeletingOrderId] = useState(null);
+
+    const deleteOrder = async (orderId) => {
+        if (!window.confirm("Are you sure you want to cancel this order?")) {
+            return;
+        }
+        setDeletingOrderId(orderId);
+        try {
+            await api.delete(`/api/orders/${orderId}`);
+            if (addToast) addToast('Order canceled successfully');
+            if (setOrders) {
+                setOrders(prev => prev.filter(o => o.id !== orderId));
+            }
+        } catch {
+            if (addToast) addToast('Failed to cancel order', 'error');
+        }
+        setDeletingOrderId(null);
+    }
 
     const addToCart = async (productId) => {
         setAddingProductId(productId);
@@ -42,8 +60,18 @@ export function OrdersGrid({ orders, loadCart, addToast }) {
                             </div>
 
                             <div className="order-header-right-section">
-                                <div className="order-header-label">Order ID:</div>
-                                <div>{order.id}</div>
+                                <div className="order-header-id-group">
+                                    <div className="order-header-label">Order ID:</div>
+                                    <div>{order.id}</div>
+                                </div>
+                                <button
+                                    className="cancel-order-button"
+                                    onClick={() => deleteOrder(order.id)}
+                                    disabled={deletingOrderId === order.id}
+                                    style={deletingOrderId === order.id ? { opacity: 0.6, cursor: 'wait' } : {}}
+                                >
+                                    {deletingOrderId === order.id ? "Canceling…" : "Cancel Order"}
+                                </button>
                             </div>
                         </div>
 

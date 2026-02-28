@@ -46,7 +46,7 @@ function OrdersPages({ cart, loadCart, addToast }) {
                         onAction={() => navigate('/')}
                     />
                 ) : (
-                    <OrdersGrid orders={orders} loadCart={loadCart} addToast={addToast} />
+                    <OrdersGrid orders={orders} loadCart={loadCart} addToast={addToast} setOrders={setOrders} />
                 )}
             </div>
         </>
