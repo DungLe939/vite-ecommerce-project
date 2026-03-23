@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { ProductsGrid } from './ProductGrid';
 import { useSearchParams } from 'react-router';
 
-function HomePage({ cart, loadCart, addToast }) {
+function HomePage({ cart, loadCart, addToast, setCart }) {
 
     const [searchparams] = useSearchParams();
     const search = searchparams.get('search');
@@ -33,7 +33,7 @@ function HomePage({ cart, loadCart, addToast }) {
             <Header cart={cart} />
 
             <div className="home-page">
-                <ProductsGrid products={products} loadCart={loadCart} isLoading={isLoading} addToast={addToast} />
+                <ProductsGrid products={products} loadCart={loadCart} isLoading={isLoading} addToast={addToast} setCart={setCart} />
             </div>
         </div>
     );

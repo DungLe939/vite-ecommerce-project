@@ -37,7 +37,7 @@ function App() {
         <>
           <ScrollToTop />
           <Routes>
-            <Route path='/' element={<HomePage cart={cart} loadCart={loadCart} addToast={addToast} />} />
+            <Route path='/' element={<HomePage cart={cart} loadCart={loadCart} addToast={addToast} setCart={setCart} />} />
             <Route path='/checkout' element={<CheckoutPage cart={cart} loadCart={loadCart} addToast={addToast} />} />
             <Route path='/orders' element={<OrdersPages cart={cart} loadCart={loadCart} addToast={addToast} />} />
             <Route path='/tracking/:orderId/:productId' element={<TrackingPage cart={cart} />} />

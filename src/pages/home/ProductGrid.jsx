@@ -1,7 +1,7 @@
 import { ProductCard } from "./ProductCard";
 import { ProductCardSkeleton } from "../../components/LoadingSkeleton";
 
-export function ProductsGrid({ products, loadCart, isLoading, addToast }) {
+export function ProductsGrid({ products, loadCart, isLoading, addToast, setCart }) {
 
     if (isLoading) {
         return (
@@ -16,7 +16,7 @@ export function ProductsGrid({ products, loadCart, isLoading, addToast }) {
     return (
         <div className="products-grid">
             {products.map((product) => (
-                <ProductCard key={product.id} product={product} loadCart={loadCart} addToast={addToast} />
+                <ProductCard key={product.id} product={product} loadCart={loadCart} addToast={addToast} setCart={setCart} />
             ))}
         </div>
     );

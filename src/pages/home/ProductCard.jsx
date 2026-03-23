@@ -1,7 +1,7 @@
 import api from "../../api";
 import { useState } from "react";
 
-export function ProductCard({ product, loadCart, addToast }) {
+export function ProductCard({ product, loadCart, addToast, setCart }) {
 
     const [quantity, setQuantity] = useState(1);
     const { id, image, name, rating, priceCents } = product;
@@ -67,14 +67,39 @@ export function ProductCard({ product, loadCart, addToast }) {
                 onClick={() => {
                     setIsAdding(true);
                     if (addToast) addToast(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart`);
+                    
+                    if (setCart) {
+                        setCart((prevCart) => {
+                            const existingItem = prevCart.find(item => item.productId === id);
+                            if (existingItem) {
+                                return prevCart.map(item =>
+                                    item.productId === id
+                                        ? { ...item, quantity: item.quantity + quantity }
+                                        : item
+                                );
+                            }
+                            return [...prevCart, {
+                                productId: id,
+                                quantity: quantity,
+                                deliveryOptionId: 1,
+                                product: product
+                            }];
+                        });
+                    }
+
                     setTimeout(() => {
                         setIsAdding(false);
                     }, 2000);
+                    
                     api.post('/api/cart-item', {
                         productId: id,
                         quantity: quantity,
                         deliveryOptionId: 1
-                    }).then(() => loadCart());
+                    }).then(() => loadCart())
+                      .catch(err => {
+                          console.error("Failed to add to cart optimistically", err);
+                          loadCart();
+                      });
                 }}
             >
                 Add to Cart
